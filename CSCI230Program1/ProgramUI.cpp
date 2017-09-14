@@ -380,15 +380,36 @@ void ProgramUI::replaceOneLine()
 		}
 	}
 
+	//[9/14/2017 12:56] Cameron Osborn: Clear cin buffer
+	cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
 	//[9/14/2017 11:47] Cameron Osborn: Get new line of code
-	cout << endl << "You've selected line " << changeLine << ". It currently reads: " << endl;
-	cout << "[" << changeLine << "]: " << changeBuffer;
+	string formerLine = changeBuffer[changeLine];
+	cout << endl << HorizontalRule << "You've selected line " << changeLine << ". It currently reads: " << endl;
+	cout << "[" << changeLine << "]: " << formerLine << endl << endl << "What would you like to change this line to say? (Enter a single period to cancel)";
 
+	bool offerAcceptChanges = true;
+	string s;
+	while (s != "") {
+		cout << endl << "[" << changeLine << "]: ";
+		getline(cin, s);
+		if (s != ".")
+		{
+			changeBuffer[changeLine] = s;
+		}
+		else {
+			cout << "No lines changed. Replace process cancelled.";
+			offerAcceptChanges = false;
+		}
+	}
 
-	//[9/14/2017 12:02] Cameron Osborn: Validate New Line of code
-		//Options input is blank?
-	//[9/14/2017 12:03] Cameron Osborn: Generate change message
-	//[9/14/2017 12:05] Cameron Osborn: Call Accept Changes
+	if (offerAcceptChanges) {
+		//[9/14/2017 12:03] Cameron Osborn: Generate change message	
+		string msg = "Line " + std::to_string(changeLine) + " has been changed. It used to read: \n[" + std::to_string(changeLine) + "]: " + formerLine + "\n\nIt now reads: \n[" + std::to_string(changeLine) + "]: " + s;
+
+		//[9/14/2017 12:05] Cameron Osborn: Call Accept Changes
+		processChanges(msg);
+	}
 }
 
 void ProgramUI::saveProgramIntoFile()
@@ -419,20 +440,21 @@ void ProgramUI::startInterface()
 		cout << HorizontalRule << endl;
 		cout << "**  MENU:(press a character to select an option)  **" << endl;
 		cout << HorizontalRule << endl;
-		cout << "Q. [QUIT]     Quit." << endl;
-		cout << "L. [LOAD]     Read in a program (lines of statements) from a file" << endl;
-		cout << "S. [SAVE]     Save lines of statement as a program into a file" << endl;
+		cout << "Q. [QUIT]         Quit." << endl;
+		cout << "L. [LOAD]         Read in a program (lines of statements) from a file" << endl;
+		cout << "S. [SAVE]         Save lines of statement in original file." << endl;
+		cout << "N. [SAVE AS NEW]  Save lines of statement as a new file." << endl;
 		cout << endl;
-		cout << "D. [DISPLAY]  Display the source code as lines of statements" << endl;
+		cout << "D. [DISPLAY]      Display the source code as lines of statements" << endl;
 		cout << endl;
-		cout << "A. [APPEND]   Append new lines to the end of the program" << endl;
-		cout << "I. [INSERT]   Insert new lines before an existing line" << endl;
-		cout << "X. [DELETE]   Delete a range of existing lines" << endl;
-		cout << "R. [REPLACE]  Replace the contents of an existing line" << endl;
+		cout << "A. [APPEND]       Append new lines to the end of the program" << endl;
+		cout << "I. [INSERT]       Insert new lines before an existing line" << endl;
+		cout << "X. [DELETE]       Delete a range of existing lines" << endl;
+		cout << "R. [REPLACE]      Replace the contents of an existing line" << endl;
 		cout << endl;
-		cout << "P. [PARSE]    Parse and indent the code" << endl;
-		cout << "E. [EXECUTE]  Execute (run) the program" << endl;
-		cout << "T. [TOGGLE]   Toggle the execution debug mode" << endl;
+		cout << "P. [PARSE]        Parse and indent the code" << endl;
+		cout << "E. [EXECUTE]      Execute (run) the program" << endl;
+		cout << "T. [TOGGLE]       Toggle the execution debug mode" << endl;
 		cout << HorizontalRule << endl << endl;
 		cout << "Your choice is: ";
 

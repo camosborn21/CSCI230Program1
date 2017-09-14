@@ -50,6 +50,9 @@ public:
 	//[9/13/2017 15:00] Cameron Osborn: replace the contents of an existing line
 	void replaceOneLine();
 
+	//[9/14/2017 13:19] Cameron Osborn: quick save
+	void quickSave();
+
 	//[9/13/2017 15:03] Cameron Osborn: save program to a file
 	void saveProgramIntoFile();
 
