@@ -1,0 +1,104 @@
+function main( )
+{
+
+   while (1)
+   {
+	//main function loop based on previous version of prime.txt which listed all primes below n.
+      	display "";
+      	display "************************************************";
+      	display "Want to find the nth prime?";
+      	display "What is your value of n this time? ";
+	read a;
+	findNthPrime(a);
+   }
+  
+}
+
+function findNthPrime(n)
+{
+  if(n>0) // test comment text on same line, sure enough, BIOLA pl allows commenting on the same line.
+  {
+	count = 0; //int tracking variable counting prime numbers found until n is reached
+	num = 0; //int tracking variable for searching out prime numbers
+	
+	//while loop which continues testing prime numbers until the number of primes found (variable count) = n
+	while(count < n)
+	{
+		//increment the prime number testing variable
+		num = num + 1;
+
+		//check if num is a prime number
+		status = isPrime(num);
+
+		if ( status )
+		{
+			//only increment the counter if a new prime is found
+			count = count + 1;
+		}
+		
+	}
+
+	//this entire nested if block was due to a personal obsession with textual coherence with the 
+	//output; ensuring that nth prime displayed the correct numerical suffix (i.e., 1st, 2nd, 3rd, etc.). I've got
+	//boiler plate code for this in C#, VB.Net and VBA but all require string typed function returns or variable assignment
+	//to a string literal which BIOLA pl doesn't support. Furthermore, BIOLA pl doesn't have a "switch" statement so
+	//it had to be completed with nested if statements. 
+	//This portion of the program actually took longer to sus out than find the nth prime.
+	if(n == 0){
+		//this case should never occur
+		display num, " is the ", n, " prime number.";
+	}
+	else
+	{
+		if(n%100>10 && n%100 < 14) {
+			// ensure we display 11th, 12th, 13th, 111th, 213th instead of 11st, 12nd, 13rd, 111st, 213rd because english is terrible
+			// n mod 100 will determine if were on the 11th, 12th, 13th numeral of the 100
+			display num, " is the ", n, "th prime number.";	
+		}
+		else
+		{
+			if(n%10 == 1){
+				//all n ending in 1 receive the suffix "st"
+				display num, " is the ", n, "st prime number.";
+			} 
+			else{
+				if(n%10 == 2){
+					//all n ending in 2 receive the suffix "nd"
+					display num, " is the ", n, "nd prime number.";
+				}
+				else
+				{
+					if(n%10 == 3){
+						//all n ending in 3 receive the suffix "rd" 
+						display num, " is the ", n, "rd prime number.";
+					} 
+					else	
+					{
+						//remaining n receive the suffix "th" because english is awesome.
+						display num, " is the ", n, "th prime number.";
+					}
+				}
+			}
+		}
+	}
+  }
+}
+
+
+
+//isPrime came from original code example
+function isPrime(x)
+{
+  if (x<2)   return 0;
+  candidate = 2;
+  while (candidate < x)
+    {
+       if ( (x % candidate) == 0 )   
+          return 0;
+       candidate = candidate +1;
+
+   }
+  return 1;
+}
+
+

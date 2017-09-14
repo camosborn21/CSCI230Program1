@@ -281,8 +281,10 @@ void ProgramUI::deleteLines()
 	int firstLine;
 	int lastLine;
 
+	//[9/14/2017 11:49] Cameron Osborn: Is CIN really necessary here? Why not use getline?
+
 	//Get first line
-	cout <<endl<< "From line #: ";
+	cout << endl << "From line #: ";
 	cin >> firstLine;
 	//[9/14/2017 01:37] Cameron Osborn: verify that the input from cin was numeric
 	if (!cin)
@@ -294,7 +296,7 @@ void ProgramUI::deleteLines()
 	//validate line
 	while (!isLineNumberValid(firstLine, false))
 	{
-		cout << "Invalid line number. Please enter a number between 1 and " << changeBuffer.size() << endl << "Start deletion with line #: ";
+		cout << endl << "Invalid line number. Please enter a number between 1 and " << changeBuffer.size() << endl << "Start deletion with line #: ";
 		cin >> firstLine;
 		//[9/14/2017 01:37] Cameron Osborn: verify that the input from cin was numeric
 		if (!cin)
@@ -329,16 +331,20 @@ void ProgramUI::deleteLines()
 		}
 	}
 
+	//Clear cin buffer
+	cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
 	//[9/14/2017 03:05] Cameron Osborn: Propegate change in buffer.
-	changeBuffer.erase(changeBuffer.begin() + firstLine-1, changeBuffer.begin() + lastLine);
-	
+	changeBuffer.erase(changeBuffer.begin() + firstLine - 1, changeBuffer.begin() + lastLine);
+
 
 	//generate change message
 	string msg;
 	if (lastLine == firstLine)
 	{
 		msg = "Line " + std::to_string(firstLine) + " deleted.";
-	} else
+	}
+	else
 	{
 		msg = "Lines " + std::to_string(firstLine) + " to " + std::to_string(lastLine) + " deleted.";
 	}
@@ -351,7 +357,38 @@ void ProgramUI::deleteLines()
 
 void ProgramUI::replaceOneLine()
 {
+	changeBuffer = lines;
+	//[9/14/2017 11:46] Cameron Osborn: Get Line
+	int changeLine;
+	cout << endl << "What line # would you like to replace? ";
 
+	cin >> changeLine;
+	if (!cin)
+	{
+		cin.clear();
+		cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	}
+	//[9/14/2017 11:46] Cameron Osborn: Validate line number
+	while (!isLineNumberValid(changeLine, false))
+	{
+		cout << endl << "Invalid line number. Please enter a number between 1 and " << changeBuffer.size() << endl << "What line # would you like to replace? ";
+		cin >> changeLine;
+		if (!cin)
+		{
+			cin.clear();
+			cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+		}
+	}
+
+	//[9/14/2017 11:47] Cameron Osborn: Get new line of code
+	cout << endl << "You've selected line " << changeLine << ". It currently reads: " << endl;
+	cout << "[" << changeLine << "]: " << changeBuffer;
+
+
+	//[9/14/2017 12:02] Cameron Osborn: Validate New Line of code
+		//Options input is blank?
+	//[9/14/2017 12:03] Cameron Osborn: Generate change message
+	//[9/14/2017 12:05] Cameron Osborn: Call Accept Changes
 }
 
 void ProgramUI::saveProgramIntoFile()
