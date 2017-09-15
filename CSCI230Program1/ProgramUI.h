@@ -12,8 +12,10 @@ using namespace std;
 class ProgramUI
 {
 private:
+	bool fileLoaded;
 	vector<string> lines;
 	vector<string> changeBuffer;
+	string currentFile;
 	string HorizontalRule = "****************************************************";
 public:
 	//[9/13/2017 14:07] Cameron Osborn: used to set the maximum length of file names. 
@@ -62,7 +64,11 @@ public:
 	//[9/13/2017 15:08] Cameron Osborn: This function displays function output messages to the user
 	void endOfService(const string service);
 	
+	//[9/15/2017 00:08] Cameron Osborn: Returns false if no file is loaded and also writes to console informing the user that the action can't be performed.
+	bool checkFileLoaded();
 
+	//[9/15/2017 00:23] Cameron Osborn: Returns false if no statements in lines vector.
+	bool checkStatementsInBuffer();
 	//ProgramUI();
 	//~ProgramUI();
 };

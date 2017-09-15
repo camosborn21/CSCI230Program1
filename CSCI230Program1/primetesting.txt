@@ -1,6 +1,5 @@
 function main( )
 {
-
    while (1)
    {
 	//main function loop based on previous version of prime.txt which listed all primes below n.
@@ -13,7 +12,6 @@ function main( )
    }
   
 }
-
 function findNthPrime(n)
 {
   if(n>0) // test comment text on same line, sure enough, BIOLA pl allows commenting on the same line.
@@ -26,10 +24,8 @@ function findNthPrime(n)
 	{
 		//increment the prime number testing variable
 		num = num + 1;
-
 		//check if num is a prime number
 		status = isPrime(num);
-
 		if ( status )
 		{
 			//only increment the counter if a new prime is found
@@ -37,7 +33,6 @@ function findNthPrime(n)
 		}
 		
 	}
-
 	//this entire nested if block was due to a personal obsession with textual coherence with the 
 	//output; ensuring that nth prime displayed the correct numerical suffix (i.e., 1st, 2nd, 3rd, etc.). I've got
 	//boiler plate code for this in C#, VB.Net and VBA but all require string typed function returns or variable assignment
@@ -83,9 +78,6 @@ function findNthPrime(n)
 	}
   }
 }
-
-
-
 //isPrime came from original code example
 function isPrime(x)
 {
@@ -96,9 +88,7 @@ function isPrime(x)
        if ( (x % candidate) == 0 )   
           return 0;
        candidate = candidate +1;
-
    }
   return 1;
 }
-
-
+//Added Comment

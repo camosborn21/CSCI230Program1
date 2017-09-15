@@ -16,13 +16,15 @@ void ProgramUI::loadProgramFromFile()
 	char fileName[MaxLengthFileName];
 	cout << "Name of file to upload program from (ex file.txt): ";
 	cin >> fileName;
-	//[9/13/2017 22:58] Cameron Osborn: flush the input buffer to fix first loop skipping glitch.
-	cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
 
 	while (strlen(fileName) == 0)
 	{
 		cin >> fileName;
 	}
+
+	//[9/13/2017 22:58] Cameron Osborn: flush the input buffer to fix first loop skipping glitch. Discovered code on Stackoverflow (https://stackoverflow.com/questions/10553597/cin-and-getline-skipping-input). Reused throughout every time cin appears outside of getline function.
+	cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 	//[9/13/2017 17:36] Cameron Osborn: Attempt to load file
 	ifstream inFile;
@@ -35,6 +37,10 @@ void ProgramUI::loadProgramFromFile()
 
 	//[9/13/2017 17:41] Cameron Osborn: consider extract method if a linesBuffer vector is added.
 	lines.clear();
+
+	//[9/14/2017 22:26] Cameron Osborn: Assign current file
+	currentFile = fileName;
+	fileLoaded = true;
 
 	//[9/13/2017 17:31] Cameron Osborn: If the file is loaded successfully then push all non-blank lines to the lines vector
 	string inputBuffer;
@@ -200,7 +206,6 @@ bool ProgramUI::isLineNumberValid(int checkNumber, bool includeZero)
 void ProgramUI::insertLines()
 {
 	int lineNumber;
-	int lineTracker;
 	changeBuffer = lines;
 	//[9/14/2017 00:16] Cameron Osborn: Get Line Number (if using cin clear buffer)
 	cout << "After which line (tell us the line #) do you want to insert a new line? ";
@@ -226,7 +231,7 @@ void ProgramUI::insertLines()
 	}
 	cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-	lineTracker = lineNumber;
+	int lineTracker = lineNumber;
 	//[9/13/2017 23:31] Cameron Osborn: Instructions to user
 	cout << endl << "We'll keep reading and inserting lines of statements you enter until a single period is entered as a line." << endl;
 
@@ -414,8 +419,57 @@ void ProgramUI::replaceOneLine()
 
 void ProgramUI::saveProgramIntoFile()
 {
+	if (!checkStatementsInBuffer())
+	{
+		return;
+	}
+
+	//Get file name
+	char fileName[MaxLengthFileName];
+	cout << "Save as File Name: ";
+	cin >> fileName;
+	while(strlen(fileName) == 0)
+	{
+		cin >> fileName;
+	}
+
+	ofstream outFile;
+	outFile.open(fileName);
+	if (outFile.fail())
+	{
+		cout << endl << "Cannot create this file!" << endl;
+		return;
+	}
+	for (vector<string>::iterator writer = lines.begin(); writer < lines.end(); ++writer)
+	{
+		outFile << *writer << endl;
+	}
+	outFile.close();
 
 }
+
+void ProgramUI::quickSave()
+{
+	if (!checkFileLoaded())
+	{
+		return;
+	}
+	ofstream outFile;
+	outFile.open(currentFile);
+	if (outFile.fail())
+	{
+		cout << endl << "Cannot open this file to save!" << endl;
+		return;
+	}
+
+	outFile.clear();
+	for(vector<string>::iterator writer = lines.begin(); writer < lines.end(); ++writer)
+	{
+		outFile << *writer << endl;
+	}
+	outFile.close();
+}
+
 
 void ProgramUI::endOfService(const string service)
 {
@@ -425,6 +479,26 @@ void ProgramUI::endOfService(const string service)
 		<< HorizontalRule
 		<< endl
 		<< endl;
+}
+bool ProgramUI::checkStatementsInBuffer()
+{
+	if(lines.size() > 0)
+	{
+		return true;
+	}
+	cout << "There are no statements in the program. To perform this action the program must have at least one statement.";
+	return false;
+}
+
+
+bool ProgramUI::checkFileLoaded()
+{
+	if (!fileLoaded)
+	{
+		cout << "A file must be loaded to perform this action. No file is currently loaded. Load a file then attempt this action again.";
+		return false;
+	}
+	return true;
 }
 
 
@@ -506,8 +580,14 @@ void ProgramUI::startInterface()
 
 		case 'S': case 's':
 			cout << "[SAVE]:" << endl;
+			quickSave();
+			endOfService("[SAVE CODE INTO ORIGINAL FILE]");
+			break;
+
+		case 'N': case 'n':
+			cout << "[SAVE AS NEW]:" << endl;
 			saveProgramIntoFile();
-			endOfService("[SAVE CODE INTO A FILE]");
+			endOfService("[SAVE CODE INTO A NEW FILE]");
 			break;
 
 		case 'P': case 'p':
