@@ -8,16 +8,14 @@
 #include <conio.h>
 using namespace std;
 
-
 void ProgramUI::loadProgramFromFile()
 {
-
 	//[9/13/2017 17:36] Cameron Osborn: Get a valid filename
 	char fileName[MaxLengthFileName];
 	cout << "Name of file to upload program from (ex file.txt): ";
 	cin >> fileName;
 
-
+	//[9/15/2017 23:09] Cameron Osborn: Repeat line in until a filename is entered.
 	while (strlen(fileName) == 0)
 	{
 		cin >> fileName;
@@ -64,7 +62,6 @@ void ProgramUI::loadProgramFromFile()
 	//[9/13/2017 18:58] Cameron Osborn: On program load, display program.
 	displayProgram();
 	inFile.close();
-
 }
 
 
@@ -74,29 +71,27 @@ void ProgramUI::displayProgram()
 	int lineCounter = 1;
 
 	//[9/13/2017 21:12] Cameron Osborn: iterate through all lines and display them in console
-	for (vector<string>::iterator iterator = lines.begin(); iterator < lines.end(); ++iterator)
+	for (vector<string>::iterator iterator = lines.begin(); iterator < lines.end(); ++iterator, ++lineCounter)
 	{
 		cout << "Line["
 			<< lineCounter
 			<< "] read:"
 			<< *iterator << endl;
-
-		++lineCounter;
 	}
 }
 
 void ProgramUI::displayChanges()
 {
+	//[9/15/2017 23:06] Cameron Osborn: Line number counter.
 	int lineCounter = 1;
 
-	for (vector<string>::iterator iterator = changeBuffer.begin(); iterator < changeBuffer.end(); ++iterator)
+	//[9/15/2017 23:06] Cameron Osborn: Iterate through all lines and display them in console
+	for (vector<string>::iterator iterator = changeBuffer.begin(); iterator < changeBuffer.end(); ++iterator, ++lineCounter)
 	{
 		cout << "Line["
 			<< lineCounter
 			<< "] read:"
 			<< *iterator << endl;
-
-		++lineCounter;
 	}
 }
 
@@ -229,6 +224,8 @@ void ProgramUI::insertLines()
 			cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 		}
 	}
+
+	//[9/15/2017 22:42] Cameron Osborn: Clear cin Buffer
 	cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 	int lineTracker = lineNumber;
@@ -286,19 +283,19 @@ void ProgramUI::deleteLines()
 	int firstLine;
 	int lastLine;
 
-	//[9/14/2017 11:49] Cameron Osborn: Is CIN really necessary here? Why not use getline?
-
-	//Get first line
+	//[9/15/2017 22:13] Cameron Osborn: Get first line
 	cout << endl << "From line #: ";
 	cin >> firstLine;
+
 	//[9/14/2017 01:37] Cameron Osborn: verify that the input from cin was numeric
+	//[9/15/2017 22:41] Cameron Osborn: Consider Refactoring to "ValidateIsNumeric()"
 	if (!cin)
 	{
 		cin.clear();
 		cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 	}
 
-	//validate line
+	//[9/15/2017 22:13] Cameron Osborn: Validate line
 	while (!isLineNumberValid(firstLine, false))
 	{
 		cout << endl << "Invalid line number. Please enter a number between 1 and " << changeBuffer.size() << endl << "Start deletion with line #: ";
@@ -311,11 +308,10 @@ void ProgramUI::deleteLines()
 		}
 	}
 
-
-
-	//get Last line
+	//[9/15/2017 22:14] Cameron Osborn: Get Last line
 	cout << "To line #: ";
 	cin >> lastLine;
+
 	//[9/14/2017 01:37] Cameron Osborn: verify that the input from cin was numeric
 	if (!cin)
 	{
@@ -480,6 +476,7 @@ void ProgramUI::endOfService(const string service)
 		<< endl
 		<< endl;
 }
+
 bool ProgramUI::checkStatementsInBuffer()
 {
 	if(lines.size() > 0)

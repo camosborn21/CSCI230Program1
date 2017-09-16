@@ -12,8 +12,13 @@ using namespace std;
 class ProgramUI
 {
 private:
+	//[9/15/2017 23:13] Cameron Osborn: Holds true if there is a file loaded; used as gate check to certain functions.
 	bool fileLoaded;
+
+	//[9/15/2017 23:13] Cameron Osborn: Primery statement vector
 	vector<string> lines;
+
+	//[9/15/2017 23:14] Cameron Osborn: Statement change vector; 
 	vector<string> changeBuffer;
 	string currentFile;
 	string HorizontalRule = "****************************************************";
@@ -21,7 +26,6 @@ public:
 	//[9/13/2017 14:07] Cameron Osborn: used to set the maximum length of file names. 
 	// Template dictated 100, consider increasing to allow fully qualified file path.
 	static const unsigned int MaxLengthFileName = 100;
-	
 	
 	//[9/13/2017 14:56] Cameron Osborn: not vary familar with C++ header files yet but this seems to be an interface definition similar to C#. The following lines were replicated from the template file. The class name of Interface was exchanged for ProgramUI because I'm too used to interface being a reserved word in other languages.
 
@@ -69,8 +73,6 @@ public:
 
 	//[9/15/2017 00:23] Cameron Osborn: Returns false if no statements in lines vector.
 	bool checkStatementsInBuffer();
-	//ProgramUI();
-	//~ProgramUI();
 };
 
 #endif
