@@ -94,3 +94,5 @@ function isPrime(x)
 //Here's an added comment
 //More or less comment
 //morer comment
+//new line
+//another new line

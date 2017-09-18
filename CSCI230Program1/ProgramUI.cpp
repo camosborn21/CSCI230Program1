@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "ProgramUI.h"
 #include <iostream>
-#include <fstream>>
+#include <fstream>
 #include <vector>
 #include <string>
 #include <cstring>
@@ -165,7 +165,7 @@ void ProgramUI::appendLines()
 		offerAcceptChanges = false;
 		break;
 
-	case 1: 
+	case 1:
 		msg = "1 line appended to the end of the program.";
 		break;
 
@@ -387,7 +387,7 @@ void ProgramUI::replaceOneLine()
 	cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 	//[9/14/2017 11:47] Cameron Osborn: Get new line of code
-	string formerLine = changeBuffer[changeLine-1];
+	string formerLine = changeBuffer[changeLine - 1];
 	cout << endl << HorizontalRule << endl << "You've selected line " << changeLine << ". It currently reads: " << endl;
 	cout << "[" << changeLine << "]: " << formerLine << endl << endl << "What would you like to change this line to say? (Enter a single period to cancel)";
 
@@ -398,7 +398,7 @@ void ProgramUI::replaceOneLine()
 		getline(cin, s);
 		if (s != ".")
 		{
-			changeBuffer[changeLine-1] = s;
+			changeBuffer[changeLine - 1] = s;
 		}
 		else {
 			cout << "No lines changed. Replace process cancelled.";
@@ -427,11 +427,11 @@ void ProgramUI::saveProgramIntoFile()
 	char fileName[MaxLengthFileName];
 	cout << "Save as File Name: ";
 	cin >> fileName;
-	while(strlen(fileName) == 0)
+	while (strlen(fileName) == 0)
 	{
 		cin >> fileName;
 	}
-
+	
 	//[9/16/2017 21:37] Cameron Osborn: Create, or open, output file
 	ofstream outFile;
 	outFile.open(fileName);
@@ -448,13 +448,15 @@ void ProgramUI::saveProgramIntoFile()
 	}
 	outFile.close();
 	uiDirty = false;
+	currentFile = fileName;
+	fileLoaded = true; 
 }
 
 
 void ProgramUI::quickSave()
 {
 	//[9/16/2017 21:40] Cameron Osborn: If a file isn't currently loaded then nothing can be quick saved
-	if (!checkFileLoaded())
+	if (!checkFileLoaded(true))
 	{
 		return;
 	}
@@ -470,7 +472,7 @@ void ProgramUI::quickSave()
 
 	//[9/16/2017 21:44] Cameron Osborn: Clear previous file content and write statements from lines vector to file.
 	outFile.clear();
-	for(vector<string>::iterator writer = lines.begin(); writer < lines.end(); ++writer)
+	for (vector<string>::iterator writer = lines.begin(); writer < lines.end(); ++writer)
 	{
 		outFile << *writer << endl;
 	}
@@ -478,7 +480,9 @@ void ProgramUI::quickSave()
 	uiDirty = false;
 }
 
-void ProgramUI::closeCurrentDocument() {
+bool ProgramUI::offerSaveContinueCancel()
+{
+	//[9/17/2017 21:55] Cameron Osborn: If changes have been made, offer user the option to save, don't save, or cancel
 	if (uiDirty) {
 		cout << endl << "There are unsaved changes in your present document. Press 'Y' to save those changes before closeing or 'N' to close without saving. Any other key will cancel closing and the current document will remain open. Your choice is: ";
 		char keyPressed = _getch();
@@ -486,16 +490,29 @@ void ProgramUI::closeCurrentDocument() {
 
 		switch (keyPressed) {
 		case 'Y': case 'y':
+			quickSave();
+			return true;
 			
-			break;
 		case 'N': case 'n':
-
-			break
-
+			return true;
+			
 		default:
-
+			return false;
 		}
+	}
+	return true;
+}
 
+
+void ProgramUI::closeCurrentDocument() {
+	//[9/17/2017 21:59] Cameron Osborn: Clear all factors pertaining to currently loaded document.
+	if (offerSaveContinueCancel())
+	{
+		lines.clear();
+		changeBuffer.clear();
+		fileLoaded = false;
+		uiDirty = false;
+		currentFile = "";
 	}
 }
 
@@ -513,7 +530,7 @@ void ProgramUI::endOfService(const string service)
 bool ProgramUI::checkStatementsInBuffer()
 {
 	//[9/16/2017 23:29] Cameron Osborn: If there are statements in the primary buffer this check returns true; otherwise false with output to user.
-	if(lines.size() > 0)
+	if (lines.size() > 0)
 	{
 		return true;
 	}
@@ -522,12 +539,14 @@ bool ProgramUI::checkStatementsInBuffer()
 }
 
 
-bool ProgramUI::checkFileLoaded()
+bool ProgramUI::checkFileLoaded(bool displayMessage)
 {
 	//[9/16/2017 23:33] Cameron Osborn: If there is a file loaded then this check returns true; otherwise false with output to user.
 	if (!fileLoaded)
 	{
-		cout << "A file must be loaded to perform this action. No file is currently loaded. Load a file then attempt this action again.";
+		if (displayMessage) {
+			cout << "A file must be loaded to perform this action. No file is currently loaded. Load a file then attempt this action again.";
+		}
 		return false;
 	}
 	return true;
@@ -537,6 +556,8 @@ bool ProgramUI::checkFileLoaded()
 //[9/13/2017 16:09] Cameron Osborn: This menu() function is the primary user interface
 void ProgramUI::startInterface()
 {
+	uiDirty = false;
+	fileLoaded = false;
 	bool inMenu = true; //[9/13/2017 16:12] Cameron Osborn: program exit boolean. When false on loop repeat the program will exit.
 	char keyPressed; //[9/13/2017 16:13] Cameron Osborn: Stores which menu selection the user picks.
 
@@ -544,31 +565,32 @@ void ProgramUI::startInterface()
 	{
 		cout << endl << endl;
 		cout << HorizontalRule << endl;
-		if (checkFileLoaded) {
-			cout << "Current Document: " << currentFile;
+		if (checkFileLoaded(false)) {
+			cout << "Current Document: " << currentFile << endl;
 		}
 		else {
-			cout << "No document loaded";
+			cout << "New Document" << endl;
 		}
 
 		cout << HorizontalRule << endl;
 		cout << "**  MENU:(press a character to select an option)  **" << endl;
 		cout << HorizontalRule << endl;
-		cout << "Q. [QUIT]         Quit." << endl;
-		cout << "L. [LOAD]         Read in a program (lines of statements) from a file" << endl;
-		cout << "S. [SAVE]         Save lines of statement in original file." << endl;
-		cout << "N. [SAVE AS NEW]  Save lines of statement as a new file." << endl;
+		cout << "Q. [QUIT]            Quit." << endl;
+		cout << "L. [LOAD]            Read in a program (lines of statements) from a file" << endl;
+		cout << "S. [SAVE]            Save lines of statement in original file." << endl;
+		cout << "N. [SAVE AS NEW]     Save lines of statement as a new file." << endl;
+		cout << "C. [CLOSE DOCUMENT]  Closes the current document." << endl;
 		cout << endl;
-		cout << "D. [DISPLAY]      Display the source code as lines of statements" << endl;
+		cout << "D. [DISPLAY]         Display the source code as lines of statements" << endl;
 		cout << endl;
-		cout << "A. [APPEND]       Append new lines to the end of the program" << endl;
-		cout << "I. [INSERT]       Insert new lines before an existing line" << endl;
-		cout << "X. [DELETE]       Delete a range of existing lines" << endl;
-		cout << "R. [REPLACE]      Replace the contents of an existing line" << endl;
+		cout << "A. [APPEND]          Append new lines to the end of the program" << endl;
+		cout << "I. [INSERT]          Insert new lines before an existing line" << endl;
+		cout << "X. [DELETE]          Delete a range of existing lines" << endl;
+		cout << "R. [REPLACE]         Replace the contents of an existing line" << endl;
 		cout << endl;
-		cout << "P. [PARSE]        Parse and indent the code" << endl;
-		cout << "E. [EXECUTE]      Execute (run) the program" << endl;
-		cout << "T. [TOGGLE]       Toggle the execution debug mode" << endl;
+		cout << "P. [PARSE]           Parse and indent the code" << endl;
+		cout << "E. [EXECUTE]         Execute (run) the program" << endl;
+		cout << "T. [TOGGLE]          Toggle the execution debug mode" << endl;
 		cout << HorizontalRule << endl << endl;
 		cout << "Your choice is: ";
 
@@ -579,7 +601,15 @@ void ProgramUI::startInterface()
 		{
 		case 'Q': case 'q':
 			cout << "[QUIT]:" << endl;
-			inMenu = false;
+			if (offerSaveContinueCancel()) {
+				inMenu = false;
+			}
+			break;
+
+		case 'C': case 'c':
+			cout << "[CLOSE DOCUMENT]:" << endl;
+			closeCurrentDocument();
+			endOfService("[CLOSE DOCUMENT]");
 			break;
 
 		case 'L': case 'l':

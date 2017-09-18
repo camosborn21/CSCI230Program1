@@ -73,6 +73,9 @@ public:
 	//[9/17/2017 21:05] Cameron Osborn: Closes the current document
 	void closeCurrentDocument();
 
+	//[9/17/2017 22:16] Cameron Osborn: Offers user the chance to save, don't save, or cancel an action which would otherwise close the current document or quit the application. bool type procedure returns true if calling function should continue actions.
+	bool offerSaveContinueCancel();
+
 	//[9/13/2017 15:04] Cameron Osborn: This function serves as the central place to access all the services provided by the interpreter including the functions listed above
 	void startInterface();
 
@@ -80,7 +83,7 @@ public:
 	void endOfService(const string service);
 	
 	//[9/15/2017 00:08] Cameron Osborn: Returns false if no file is loaded and also writes to console informing the user that the action can't be performed.
-	bool checkFileLoaded();
+	bool checkFileLoaded(bool displayMessage);
 
 	//[9/15/2017 00:23] Cameron Osborn: Returns false if no statements in lines vector.
 	bool checkStatementsInBuffer();
