@@ -319,7 +319,7 @@ void ProgramUI::deleteLines()
 		cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 	}
 
-	//validate line
+	//[9/16/2017 21:31] Cameron Osborn: validate line
 	while (!isLineNumberValid(lastLine, false) || lastLine < firstLine)
 	{
 		cout << "Invalid line number. Please enter a number between" << firstLine << " and " << changeBuffer.size() << endl << "Finish deletion with line #: ";
@@ -415,12 +415,13 @@ void ProgramUI::replaceOneLine()
 
 void ProgramUI::saveProgramIntoFile()
 {
+	//[9/16/2017 21:32] Cameron Osborn: If lines vector has no content then a new file cannot be saved.
 	if (!checkStatementsInBuffer())
 	{
 		return;
 	}
 
-	//Get file name
+	//[9/16/2017 21:26] Cameron Osborn: Get a file name. Add future validation
 	char fileName[MaxLengthFileName];
 	cout << "Save as File Name: ";
 	cin >> fileName;
@@ -429,6 +430,7 @@ void ProgramUI::saveProgramIntoFile()
 		cin >> fileName;
 	}
 
+	//[9/16/2017 21:37] Cameron Osborn: Create, or open, output file
 	ofstream outFile;
 	outFile.open(fileName);
 	if (outFile.fail())
@@ -436,20 +438,25 @@ void ProgramUI::saveProgramIntoFile()
 		cout << endl << "Cannot create this file!" << endl;
 		return;
 	}
+
+	//[9/16/2017 21:39] Cameron Osborn: Write all lines to output file.
 	for (vector<string>::iterator writer = lines.begin(); writer < lines.end(); ++writer)
 	{
 		outFile << *writer << endl;
 	}
 	outFile.close();
-
 }
+
 
 void ProgramUI::quickSave()
 {
+	//[9/16/2017 21:40] Cameron Osborn: If a file isn't currently loaded then nothing can be quick saved
 	if (!checkFileLoaded())
 	{
 		return;
 	}
+
+	//[9/16/2017 21:40] Cameron Osborn: Get output file open for writing
 	ofstream outFile;
 	outFile.open(currentFile);
 	if (outFile.fail())
@@ -458,6 +465,7 @@ void ProgramUI::quickSave()
 		return;
 	}
 
+	//[9/16/2017 21:44] Cameron Osborn: Clear previous file content and write statements from lines vector to file.
 	outFile.clear();
 	for(vector<string>::iterator writer = lines.begin(); writer < lines.end(); ++writer)
 	{
@@ -469,6 +477,7 @@ void ProgramUI::quickSave()
 
 void ProgramUI::endOfService(const string service)
 {
+	//[9/16/2017 21:45] Cameron Osborn: Writes an output message for each action completion.
 	cout << endl << service << " done." << endl << "Press any key to continue.";
 	_getch();
 	cout << endl
@@ -479,6 +488,7 @@ void ProgramUI::endOfService(const string service)
 
 bool ProgramUI::checkStatementsInBuffer()
 {
+	//[9/16/2017 23:29] Cameron Osborn: If there are statements in the primary buffer this check returns true; otherwise false with output to user.
 	if(lines.size() > 0)
 	{
 		return true;
@@ -490,6 +500,7 @@ bool ProgramUI::checkStatementsInBuffer()
 
 bool ProgramUI::checkFileLoaded()
 {
+	//[9/16/2017 23:33] Cameron Osborn: If there is a file loaded then this check returns true; otherwise false with output to user.
 	if (!fileLoaded)
 	{
 		cout << "A file must be loaded to perform this action. No file is currently loaded. Load a file then attempt this action again.";
@@ -608,17 +619,3 @@ void ProgramUI::startInterface()
 
 	} //[9/13/2017 16:48] Cameron Osborn: end of while loop
 }
-
-
-
-
-
-
-//ProgramUI::ProgramUI()
-//{
-//}
-//
-//
-//ProgramUI::~ProgramUI()
-//{
-//}
