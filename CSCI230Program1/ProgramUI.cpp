@@ -111,6 +111,7 @@ void ProgramUI::processChanges(string changeMessage)
 	{
 	case 'Y': case 'y': //[9/13/2017 23:11] Cameron Osborn: changes accepted. Update lines vector to match changeBuffer vector
 		lines = changeBuffer;
+		uiDirty = true;
 		cout << endl << "Changes accepted. " << changeMessage;
 		break;
 
@@ -134,7 +135,6 @@ void ProgramUI::processChanges(string changeMessage)
 
 void ProgramUI::appendLines()
 {
-
 	//[9/13/2017 21:34] Cameron Osborn: Display action
 	cout << "Keep reading and appending lines of statements you enter to the end of the program until a single period is entered as a line." << endl;
 
@@ -165,7 +165,7 @@ void ProgramUI::appendLines()
 		offerAcceptChanges = false;
 		break;
 
-	case 1:
+	case 1: 
 		msg = "1 line appended to the end of the program.";
 		break;
 
@@ -181,7 +181,7 @@ void ProgramUI::appendLines()
 }
 
 //[9/14/2017 01:08] Cameron Osborn: determine if an input line number is within the range of the application.
-//[9/14/2017 01:14] Cameron Osborn: added boolean check for include zero to account for insertion after "Line 0" a.k.a. as line 1. Otherwise line checks should be bound 1 to changebuffer.size
+//[9/14/2017 01:14] Cameron Osborn: added boolean check for include zero to account for insertion after "Line 0" a.k.a. as line 1. Otherwise line checks should be bound from 1 to changebuffer.size
 bool ProgramUI::isLineNumberValid(int checkNumber, bool includeZero)
 {
 	if (includeZero == true) {
@@ -202,7 +202,7 @@ void ProgramUI::insertLines()
 {
 	int lineNumber;
 	changeBuffer = lines;
-	//[9/14/2017 00:16] Cameron Osborn: Get Line Number (if using cin clear buffer)
+	//[9/14/2017 00:16] Cameron Osborn: Get Line Number (using cin; clear buffer after)
 	cout << "After which line (tell us the line #) do you want to insert a new line? ";
 	cin >> lineNumber;
 
@@ -369,6 +369,8 @@ void ProgramUI::replaceOneLine()
 		cin.clear();
 		cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 	}
+
+
 	//[9/14/2017 11:46] Cameron Osborn: Validate line number
 	while (!isLineNumberValid(changeLine, false))
 	{
@@ -385,18 +387,18 @@ void ProgramUI::replaceOneLine()
 	cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 	//[9/14/2017 11:47] Cameron Osborn: Get new line of code
-	string formerLine = changeBuffer[changeLine];
-	cout << endl << HorizontalRule << "You've selected line " << changeLine << ". It currently reads: " << endl;
+	string formerLine = changeBuffer[changeLine-1];
+	cout << endl << HorizontalRule << endl << "You've selected line " << changeLine << ". It currently reads: " << endl;
 	cout << "[" << changeLine << "]: " << formerLine << endl << endl << "What would you like to change this line to say? (Enter a single period to cancel)";
 
 	bool offerAcceptChanges = true;
 	string s;
-	while (s != "") {
+	while (s == "") {
 		cout << endl << "[" << changeLine << "]: ";
 		getline(cin, s);
 		if (s != ".")
 		{
-			changeBuffer[changeLine] = s;
+			changeBuffer[changeLine-1] = s;
 		}
 		else {
 			cout << "No lines changed. Replace process cancelled.";
@@ -445,6 +447,7 @@ void ProgramUI::saveProgramIntoFile()
 		outFile << *writer << endl;
 	}
 	outFile.close();
+	uiDirty = false;
 }
 
 
@@ -472,8 +475,29 @@ void ProgramUI::quickSave()
 		outFile << *writer << endl;
 	}
 	outFile.close();
+	uiDirty = false;
 }
 
+void ProgramUI::closeCurrentDocument() {
+	if (uiDirty) {
+		cout << endl << "There are unsaved changes in your present document. Press 'Y' to save those changes before closeing or 'N' to close without saving. Any other key will cancel closing and the current document will remain open. Your choice is: ";
+		char keyPressed = _getch();
+		cout << keyPressed;
+
+		switch (keyPressed) {
+		case 'Y': case 'y':
+			
+			break;
+		case 'N': case 'n':
+
+			break
+
+		default:
+
+		}
+
+	}
+}
 
 void ProgramUI::endOfService(const string service)
 {
@@ -519,6 +543,14 @@ void ProgramUI::startInterface()
 	while (inMenu)
 	{
 		cout << endl << endl;
+		cout << HorizontalRule << endl;
+		if (checkFileLoaded) {
+			cout << "Current Document: " << currentFile;
+		}
+		else {
+			cout << "No document loaded";
+		}
+
 		cout << HorizontalRule << endl;
 		cout << "**  MENU:(press a character to select an option)  **" << endl;
 		cout << HorizontalRule << endl;

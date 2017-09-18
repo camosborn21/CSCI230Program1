@@ -15,13 +15,21 @@ private:
 	//[9/15/2017 23:13] Cameron Osborn: Holds true if there is a file loaded; used as gate check to certain functions.
 	bool fileLoaded;
 
+	//[9/17/2017 21:09] Cameron Osborn: Holds true if the UI is dirty; used as gate check to certain functions
+	bool uiDirty;
+
 	//[9/15/2017 23:13] Cameron Osborn: Primery statement vector
 	vector<string> lines;
 
 	//[9/15/2017 23:14] Cameron Osborn: Statement change vector; 
 	vector<string> changeBuffer;
+
+	//[9/17/2017 21:01] Cameron Osborn: Holds the files name of the currently loaded file
 	string currentFile;
+
+	//[9/17/2017 21:01] Cameron Osborn: Holds the string literal for the horizonal rule
 	string HorizontalRule = "****************************************************";
+
 public:
 	//[9/13/2017 14:07] Cameron Osborn: used to set the maximum length of file names. 
 	// Template dictated 100, consider increasing to allow fully qualified file path.
@@ -61,6 +69,9 @@ public:
 
 	//[9/13/2017 15:03] Cameron Osborn: save program to a file
 	void saveProgramIntoFile();
+
+	//[9/17/2017 21:05] Cameron Osborn: Closes the current document
+	void closeCurrentDocument();
 
 	//[9/13/2017 15:04] Cameron Osborn: This function serves as the central place to access all the services provided by the interpreter including the functions listed above
 	void startInterface();
