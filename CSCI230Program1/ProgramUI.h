@@ -30,6 +30,9 @@ private:
 	//[9/17/2017 21:01] Cameron Osborn: Holds the string literal for the horizonal rule
 	string HorizontalRule = "****************************************************";
 
+	//[9/18/2017 18:03] Cameron Osborn: Holds string literal for invalid operation: function not yet programmed
+	string InvalidOperationFunctionNotYetProgrammed = "Invalid Operation Exception: Function not yet programmed.";
+
 public:
 	//[9/13/2017 14:07] Cameron Osborn: used to set the maximum length of file names. 
 	// Template dictated 100, consider increasing to allow fully qualified file path.

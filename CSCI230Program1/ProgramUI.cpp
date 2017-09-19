@@ -67,16 +67,18 @@ void ProgramUI::loadProgramFromFile()
 
 void ProgramUI::displayProgram()
 {
-	//[9/13/2017 18:54] Cameron Osborn: Line number counter.
-	int lineCounter = 1;
+	if (checkStatementsInBuffer()) {
+		//[9/13/2017 18:54] Cameron Osborn: Line number counter.
+		int lineCounter = 1;
 
-	//[9/13/2017 21:12] Cameron Osborn: iterate through all lines and display them in console
-	for (vector<string>::iterator iterator = lines.begin(); iterator < lines.end(); ++iterator, ++lineCounter)
-	{
-		cout << "Line["
-			<< lineCounter
-			<< "] read:"
-			<< *iterator << endl;
+		//[9/13/2017 21:12] Cameron Osborn: iterate through all lines and display them in console
+		for (vector<string>::iterator iterator = lines.begin(); iterator < lines.end(); ++iterator, ++lineCounter)
+		{
+			cout << "Line["
+				<< lineCounter
+				<< "] read:"
+				<< *iterator << endl;
+		}
 	}
 }
 
@@ -322,7 +324,7 @@ void ProgramUI::deleteLines()
 	//[9/16/2017 21:31] Cameron Osborn: validate line
 	while (!isLineNumberValid(lastLine, false) || lastLine < firstLine)
 	{
-		cout << "Invalid line number. Please enter a number between" << firstLine << " and " << changeBuffer.size() << endl << "Finish deletion with line #: ";
+		cout << "Invalid line number. Please enter a number between " << firstLine << " and " << changeBuffer.size() << endl << "Finish deletion with line #: ";
 		cin >> lastLine;
 		//[9/14/2017 01:37] Cameron Osborn: verify that the input from cin was numeric
 		if (!cin)
@@ -425,13 +427,17 @@ void ProgramUI::saveProgramIntoFile()
 
 	//[9/16/2017 21:26] Cameron Osborn: Get a file name. Add future validation
 	char fileName[MaxLengthFileName];
-	cout << "Save as File Name: ";
+	cout <<endl << "Save as File Name: ";
 	cin >> fileName;
 	while (strlen(fileName) == 0)
 	{
 		cin >> fileName;
 	}
 	
+	//Clear cin buffer
+	cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+
 	//[9/16/2017 21:37] Cameron Osborn: Create, or open, output file
 	ofstream outFile;
 	outFile.open(fileName);
@@ -490,7 +496,13 @@ bool ProgramUI::offerSaveContinueCancel()
 
 		switch (keyPressed) {
 		case 'Y': case 'y':
-			quickSave();
+			if (fileLoaded) {
+				quickSave();
+			}
+			else
+			{
+				saveProgramIntoFile();
+			}
 			return true;
 			
 		case 'N': case 'n':
@@ -506,7 +518,7 @@ bool ProgramUI::offerSaveContinueCancel()
 
 void ProgramUI::closeCurrentDocument() {
 	//[9/17/2017 21:59] Cameron Osborn: Clear all factors pertaining to currently loaded document.
-	if (offerSaveContinueCancel())
+	if ((fileLoaded == true || checkStatementsInBuffer() == true) && offerSaveContinueCancel() == true)
 	{
 		lines.clear();
 		changeBuffer.clear();
@@ -566,10 +578,20 @@ void ProgramUI::startInterface()
 		cout << endl << endl;
 		cout << HorizontalRule << endl;
 		if (checkFileLoaded(false)) {
-			cout << "Current Document: " << currentFile << endl;
+			if (uiDirty == true) {
+				cout << "Current Document: " << currentFile << "(*)" << endl;
+			}
+			else {
+				cout << "Current Document: " << currentFile << endl;
+			}
 		}
 		else {
-			cout << "New Document" << endl;
+			if (uiDirty == true) {
+				cout << "New Document(*)" << endl;
+			}
+			else {
+				cout << "New Document" << endl;
+			}
 		}
 
 		cout << HorizontalRule << endl;
@@ -662,20 +684,25 @@ void ProgramUI::startInterface()
 
 		case 'P': case 'p':
 			cout << "[PARSE AND INDENT SOURCE CODE]:" << endl;
+			cout << InvalidOperationFunctionNotYetProgrammed;
 			endOfService("[PARSE AND INDENT SOURCE CODE]");
 			break;
 
 		case 'E': case 'e':
 			cout << "[EXECUTE TO RUN PROGRAM]:" << endl;
+			cout << InvalidOperationFunctionNotYetProgrammed;
 			endOfService("[EXECUTE TO RUN PROGRAM]");
 			break;
 
 		case 'T': case 't':
 			cout << "[TOGGLE the debug mode]:" << endl;
+			cout << InvalidOperationFunctionNotYetProgrammed;
+			endOfService("[TOGGLE the debug mode]");
 			break;
 
 		default:
 			cout << "[?? UNKNOWN COMMAND]:" << keyPressed << endl;
+			endOfService("[?? UNKNOWN COMMAND]");
 		} //[9/13/2017 16:48] Cameron Osborn: end of switch
 
 
