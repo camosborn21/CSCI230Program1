@@ -462,8 +462,10 @@ void ProgramUI::saveProgramIntoFile()
 void ProgramUI::quickSave()
 {
 	//[9/16/2017 21:40] Cameron Osborn: If a file isn't currently loaded then nothing can be quick saved
-	if (!checkFileLoaded(true))
+	//[9/19/2017 13:15] Cameron Osborn: Revision-- if a file isn't loaded then offer a SaveAs
+	if (!checkFileLoaded(false))
 	{
+		saveProgramIntoFile();
 		return;
 	}
 
